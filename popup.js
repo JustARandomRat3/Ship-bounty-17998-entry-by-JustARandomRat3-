@@ -10,6 +10,7 @@ const model = document.querySelector("#model");
 const connectButton = document.querySelector("#connect");
 const disconnectButton = document.querySelector("#disconnect");
 const status = document.querySelector("#status");
+const DEFAULT_APP_KEY = "pk_TAxelh2789xsaLvK";
 const DEFAULT_MODEL = "qwen/qwen3guard-gen-8b";
 const VALID_MODELS = new Set([
   "openai/gpt-oss-20b",
@@ -35,7 +36,7 @@ const setBusy = (busy) => {
 
 extensionAPI.storage.local.get(["apiKey", "appKey", "model", "accessToken"]).then((saved) => {
   apiKey.value = saved.apiKey || "";
-  appKey.value = saved.appKey || "";
+  appKey.value = saved.appKey || DEFAULT_APP_KEY;
   const selected = normalizeModel(saved.model);
 
   if (Array.from(model.options).some((option) => option.value === selected)) {
