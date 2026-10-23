@@ -4,17 +4,23 @@ if (!extensionAPI) {
   throw new Error("Extension API is not available in this environment.");
 }
 
-const DEFAULT_MODEL = "respan/span-01-lite";
+const DEFAULT_MODEL = "qwen/qwen3guard-gen-8b";
 const VALID_MODELS = new Set([
-  "respan/span-01-lite",
-  "typesafe/jev-1.13",
-  "amazon/nova-micro-v1",
-  "mistralai/mistral-small-3.2"
+  "openai/gpt-oss-20b",
+  "meta/llama-3.3-70b-instruct",
+  "openai/gpt-5.4-nano",
+  "qwen/qwen3guard-gen-8b"
 ]);
+const TYPE_SAFE_MODELS = new Set([]);
 
 const normalizeModel = (value) => {
   const candidate = (value || DEFAULT_MODEL).trim();
   return VALID_MODELS.has(candidate) ? candidate : DEFAULT_MODEL;
+};
+
+const resolveGenerationModel = (value) => {
+  const selected = normalizeModel(value);
+  return TYPE_SAFE_MODELS.has(selected) ? DEFAULT_MODEL : selected;
 };
 
 extensionAPI.runtime.onInstalled.addListener(() => {
@@ -29,13 +35,15 @@ extensionAPI.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "stretch-selection" || !tab?.id) return;
 
   try {
-    const { apiKey, model } = await extensionAPI.storage.local.get(["apiKey", "model"]);
+    const { apiKey, accessToken, model } = await extensionAPI.storage.local.get(["apiKey", "accessToken", "model"]);
     const selectedModel = normalizeModel(model);
+    const generationModel = resolveGenerationModel(selectedModel);
+    const bearerToken = (accessToken || apiKey || "").trim();
 
-    if (!apiKey) {
+    if (!bearerToken) {
       await extensionAPI.tabs.sendMessage(tab.id, {
         type: "STRETCH\_ERROR",
-        message: "Add your Pollinations API key in the extension popup first."
+        message: "Connect with Pollinations in the extension popup first so the reader can pay with their own Pollen."
       });
       return;
     }
@@ -45,11 +53,11 @@ extensionAPI.contextMenus.onClicked.addListener(async (info, tab) => {
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${bearerToken}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: selectedModel,
+          model: generationModel,
           messages: [
             {
               role: "system",

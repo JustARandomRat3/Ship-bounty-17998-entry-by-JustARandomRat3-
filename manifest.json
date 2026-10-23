@@ -7,7 +7,9 @@
     "contextMenus",
     "storage",
     "activeTab",
-    "https://gen.pollinations.ai/*"
+    "tabs",
+    "https://gen.pollinations.ai/*",
+    "https://enter.pollinations.ai/*"
   ],
   "background": {
     "scripts": ["background.js"]
@@ -22,9 +24,16 @@
     "default_title": "Stretchtext",
     "default_popup": "popup.html"
   },
+  "applications": {
+    "gecko": {
+      "id": "stretchtext@example.org",
+      "strict_min_version": "109.0"
+    }
+  },
   "browser_specific_settings": {
     "gecko": {
-      "id": "stretchtext@example.org"
+      "id": "stretchtext@example.org",
+      "strict_min_version": "109.0"
     }
   }
 }
