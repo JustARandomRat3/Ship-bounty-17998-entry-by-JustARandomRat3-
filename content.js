@@ -1,6 +1,12 @@
+const extensionAPI = globalThis.browser || globalThis.chrome;
+
+if (!extensionAPI) {
+  throw new Error("Extension API is not available in this environment.");
+}
+
 let savedSelection = null;
 
-browser.runtime.onMessage.addListener((message) => {
+extensionAPI.runtime.onMessage.addListener((message) => {
   if (message.type === "STRETCH\_ERROR") {
     showToast(message.message);
     return;
@@ -45,7 +51,7 @@ browser.runtime.onMessage.addListener((message) => {
   }
 });
 
-browser.runtime.onMessage.addListener((message) => {
+extensionAPI.runtime.onMessage.addListener((message) => {
   if (message.type !== "STRETCH\_RESULT") return;
 
   // Selection may no longer be active after opening the context menu.
