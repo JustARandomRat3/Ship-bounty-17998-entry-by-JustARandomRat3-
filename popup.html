@@ -2,26 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Stretchtext settings</title>
   <style>
-    body { width: 280px; padding: 12px; font: 14px system-ui; }
-    label { display: block; margin: 10px 0 4px; }
-    input { box-sizing: border-box; width: 100%; padding: 7px; }
-    button { margin-top: 12px; padding: 7px 12px; }
-    #status { min-height: 1.2em; }
+    :root {
+      --bg: #0f0f12;
+      --panel: #161617;
+      --panel-2: rgba(255,255,255,0.02);
+      --accent: #bfa06a;
+      --accent-soft: rgba(191,160,106,0.1);
+      --muted: #9a988f;
+      --text: #e6e3df;
+      --shadow: 0 8px 30px rgba(0,0,0,0.6);
+      --radius: 12px;
+      --border: rgba(255,255,255,0.04);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: "Segoe UI", Roboto, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(191,160,106,0.03), transparent 6%),
+        linear-gradient(180deg, #0b0b0d, #111113 60%);
+      color: var(--text);
+    }
+
+    body {
+      width: 330px;
+      padding: 16px;
+    }
+
+    .popup-shell {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, rgba(191,160,106,0.12), rgba(191,160,106,0.04));
+      border: 1px solid rgba(191,160,106,0.12);
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+
+    .header p {
+      margin: 4px 0 0;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    input {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.04);
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input::placeholder {
+      color: rgba(154, 152, 143, 0.8);
+    }
+
+    input:focus {
+      outline: none;
+      border-color: rgba(191,160,106,0.25);
+      box-shadow: 0 0 0 3px rgba(191,160,106,0.08);
+    }
+
+    .animated-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 42px;
+      padding: 0 12px;
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(191,160,106,0.12);
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: inherit;
+      transition: transform 0.13s ease, background 0.13s ease, box-shadow 0.13s ease;
+      margin-top: 4px;
+    }
+
+    .animated-btn:hover {
+      background: rgba(191,160,106,0.08);
+    }
+
+    .animated-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 12px rgba(191,160,106,0.18);
+    }
+
+    .animated-btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    #status {
+      min-height: 1.3em;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.4;
+    }
+
+    #status.success {
+      color: var(--accent);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
-  <h2>Stretchtext</h2>
-  <label for="apiKey">Pollinations API key</label>
-  <input id="apiKey" type="password" autocomplete="off">
-  <label for="model">Text model</label>
-<select id="model"></select>
+  <div class="popup-shell">
+    <div class="header">
+      <div class="brand-mark">S</div>
+      <div>
+        <h2>Stretchtext</h2>
+        <p>AI settings</p>
+      </div>
+    </div>
 
-  <input id="model" value="openai">
-  <button id="save">Save</button>
-  <p id="status" aria-live="polite"></p>
+    <div class="field">
+      <label for="apiKey">Pollinations API key</label>
+      <input id="apiKey" type="password" autocomplete="off" placeholder="Enter your key">
+    </div>
+
+    <div class="field">
+      <label for="model">Text model</label>
+      <input id="model" value="openai" placeholder="openai">
+    </div>
+
+    <button id="save" class="animated-btn">Save settings</button>
+    <p id="status" aria-live="polite">Ready to update</p>
+  </div>
+
   <script src="popup.js"></script>
 </body>
 </html>
