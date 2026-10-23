@@ -1,20 +1,26 @@
-browser.runtime.onInstalled.addListener(() => {
-  browser.contextMenus.create({
+const extensionAPI = globalThis.browser || globalThis.chrome;
+
+if (!extensionAPI) {
+  throw new Error("Extension API is not available in this environment.");
+}
+
+extensionAPI.runtime.onInstalled.addListener(() => {
+  extensionAPI.contextMenus.create({
     id: "stretch-selection",
     title: "Stretch selected text",
     contexts: ["selection"]
   });
 });
 
-browser.contextMenus.onClicked.addListener(async (info, tab) => {
+extensionAPI.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId !== "stretch-selection" || !tab?.id) return;
 
   try {
     const { apiKey, model = "openai" } =
-      await browser.storage.local.get(["apiKey", "model"]);
+      await extensionAPI.storage.local.get(["apiKey", "model"]);
 
     if (!apiKey) {
-      await browser.tabs.sendMessage(tab.id, {
+      await extensionAPI.tabs.sendMessage(tab.id, {
         type: "STRETCH\_ERROR",
         message: "Add your Pollinations API key in the extension popup first."
       });
@@ -26,7 +32,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
@@ -44,9 +50,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
     );
 
     if (!response.ok) {
-  const details = await response.text();
-  throw new Error(`API request failed (${response.status}): ${details}`);
-
+      throw new Error(`API request failed (${response.status})`);
     }
 
     const data = await response.json();
@@ -54,12 +58,12 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
 
     if (!shortened) throw new Error("The model returned no text.");
 
-    await browser.tabs.sendMessage(tab.id, {
+    await extensionAPI.tabs.sendMessage(tab.id, {
       type: "STRETCH\_RESULT",
       shortened
     });
   } catch (error) {
-    await browser.tabs.sendMessage(tab.id, {
+    await extensionAPI.tabs.sendMessage(tab.id, {
       type: "STRETCH\_ERROR",
       message: error.message || "Could not stretch that selection."
     });
