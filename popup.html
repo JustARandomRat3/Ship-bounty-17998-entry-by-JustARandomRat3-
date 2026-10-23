@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Stretchtext settings</title>
+  <style>
+    body { width: 280px; padding: 12px; font: 14px system-ui; }
+    label { display: block; margin: 10px 0 4px; }
+    input { box-sizing: border-box; width: 100%; padding: 7px; }
+    button { margin-top: 12px; padding: 7px 12px; }
+    #status { min-height: 1.2em; }
+  </style>
+</head>
+<body>
+  <h2>Stretchtext</h2>
+  <label for="apiKey">Pollinations API key</label>
+  <input id="apiKey" type="password" autocomplete="off">
+  <label for="model">Text model</label>
+  <input id="model" value="openai">
+  <button id="save">Save</button>
+  <p id="status" aria-live="polite"></p>
+  <script src="popup.js"></script>
+</body>
+</html>
